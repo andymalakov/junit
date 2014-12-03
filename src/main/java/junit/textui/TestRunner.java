@@ -10,6 +10,8 @@ import junit.framework.TestSuite;
 import junit.runner.BaseTestRunner;
 import junit.runner.Version;
 
+import junit.runner.ConcutestVersion;
+
 /**
  * A command line based tool to run tests.
  * <pre>
@@ -164,8 +166,9 @@ public class TestRunner extends BaseTestRunner {
                 int lastIndex = arg.lastIndexOf('.');
                 testCase = arg.substring(0, lastIndex);
                 method = arg.substring(lastIndex + 1);
-            } else if (args[i].equals("-v")) {
-                System.err.println("JUnit " + Version.id() + " by Kent Beck and Erich Gamma");
+            } else if (args[i].equals("-v"))  {
+                System.err.println("Concutest-JUnit " + ConcutestVersion.id() + " by Mathias Ricken");
+                System.err.println("based on JUnit " + Version.id() + " by Kent Beck and Erich Gamma");
             } else {
                 testCase = args[i];
             }

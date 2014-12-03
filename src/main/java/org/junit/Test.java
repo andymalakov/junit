@@ -95,4 +95,19 @@ public @interface Test {
      * </p>
      */
     long timeout() default 0L;
+    
+
+    /**
+     * Optionally set <code>checkThreads</code> to false to not detect failures in all threads. */
+    boolean checkThreads() default true;
+    
+    /**
+     * Optionally set <code>checkJoin</code> to false to not require all non-daemon threads
+     * to join. */
+    boolean checkJoin() default true;
+    
+    /**
+     * Optionally set <code>checkLucky</code> to false to not check for lucky thread termination
+     * without join. */
+    boolean checkLucky() default true;
 }

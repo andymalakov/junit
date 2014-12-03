@@ -30,6 +30,9 @@ import org.junit.runners.model.InitializationError;
 import org.junit.runners.model.MultipleFailureException;
 import org.junit.runners.model.Statement;
 
+import edu.rice.cs.cunit.concJUnit.RunInThreadGroup;
+import edu.rice.cs.cunit.concJUnit.TestThreadGroup;
+
 /**
  * Implements the JUnit 4 standard test case class model, as defined by the
  * annotations in the org.junit package. Many users will never notice this
@@ -276,6 +279,7 @@ public class BlockJUnit4ClassRunner extends ParentRunner<FrameworkMethod> {
         statement = withBefores(method, test, statement);
         statement = withAfters(method, test, statement);
         statement = withRules(method, test, statement);
+        statement = withThreadGroup(method, test, statement);
         return statement;
     }
 
@@ -433,5 +437,47 @@ public class BlockJUnit4ClassRunner extends ParentRunner<FrameworkMethod> {
             return 0;
         }
         return annotation.timeout();
+    }
+    
+
+    private boolean getCheckThreads(Test annotation) {
+        if (!TestThreadGroup.isCheckThreadsEnabled())
+            return false;
+        if (annotation == null)
+            return true;
+        return annotation.checkThreads();
+    }
+
+    private boolean getCheckJoin(Test annotation) {
+        if (!TestThreadGroup.isCheckJoinEnabled())
+            return false;
+        if (annotation == null)
+            return true;
+        return annotation.checkJoin();
+    }
+
+    private boolean getCheckLucky(Test annotation) {
+        if (!TestThreadGroup.isCheckLuckyEnabled())
+            return false;
+        if (annotation == null)
+            return true;
+        return annotation.checkLucky();
+    }
+    
+
+    /**
+     * Returns a {@link Statement}: if {@code method}'s {@code @Test} annotation
+     * has the {@code checkThreads} attribute, run the method in a thread group.
+     * 
+     * @deprecated Will be private soon: use Rules instead
+     */
+    @Deprecated
+    protected Statement withThreadGroup(FrameworkMethod method, Object test,
+            Statement next) {
+        boolean checkThreads = getCheckThreads(method.getAnnotation(Test.class));
+        boolean checkJoin = getCheckJoin(method.getAnnotation(Test.class));
+        boolean checkLucky = getCheckLucky(method.getAnnotation(Test.class));
+        return checkThreads ? new RunInThreadGroup(next, method.getMethod(),
+                checkJoin, checkLucky) : next;
     }
 }

@@ -1,5 +1,7 @@
 package junit.extensions;
 
+import java.util.ArrayList;
+
 import junit.framework.Test;
 import junit.framework.TestCase;
 import junit.framework.TestResult;
@@ -12,6 +14,7 @@ import junit.framework.TestSuite;
  * -- Aarhus Radisson Scandinavian Center 11th floor
  */
 public class ActiveTestSuite extends TestSuite {
+    private final ArrayList<Thread> threadsToJoin = new ArrayList<Thread>(); 
     private volatile int fActiveTestDeathCount;
 
     public ActiveTestSuite() {
@@ -50,6 +53,7 @@ public class ActiveTestSuite extends TestSuite {
                 }
             }
         };
+        threadsToJoin.add(t);
         t.start();
     }
 
@@ -61,6 +65,13 @@ public class ActiveTestSuite extends TestSuite {
                 return; // ignore
             }
         }
+        for(Thread t: threadsToJoin) {
+            try {
+                t.join();
+            } catch (InterruptedException e) { 
+                /* ignore */ 
+            }
+        }        
     }
 
     synchronized public void runFinished() {
